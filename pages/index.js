@@ -46,16 +46,16 @@ const Index = () => {
         </p>
       </div>
       <div>
-        <Link href={'/example'}>
-          <a>Another example page</a>
+        <Link href={'/profile'}>
+          <a>profile</a>
         </Link>
       </div>
-      {error && <div>Failed to fetch food!</div>}
+      {/* {error && <div>Failed to fetch food!</div>}
       {data && !error ? (
         <div>Your favorite food is {data.food}.</div>
       ) : (
         <div>Loading...</div>
-      )}
+      )} */}
     </div>
   )
 }
