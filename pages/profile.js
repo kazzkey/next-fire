@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import { useUser } from '../utils/auth/useUser'
 import firebase from 'firebase/app'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const Profile = () => {
+  const [users, setUsers] = useState([]);
   const [parentName, setParentName] = useState('');
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
@@ -11,6 +12,22 @@ const Profile = () => {
   const [birthday, setBirthday] = useState('');
   const [school, setSchool] = useState('');
   const [grade, setGrade] = useState('');
+
+  useEffect(() => {
+    const db = firebase.firestore();
+    const unsubscribe = db.collection('users').onSnapshot((querySnapshot) => {
+      const _users = querySnapshot.docs.map(doc => {
+        return ({
+          userId: doc.id,
+          ...doc.data()
+        });
+      });
+      setUsers(_users);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const { user } = useUser()
   if (!user) {
@@ -40,6 +57,23 @@ const Profile = () => {
     setSchool('');
     setGrade('');
   }
+
+  const userLists = users.map(user => {
+  
+    return (
+      <tr>
+        {/* <div key={user.userId} id="list"> */}
+        <td>{user.parentName}</td>
+        <td>{user.address}</td>
+        <td>{user.email}</td>
+        <td>{user.childName}</td>
+        <td>{user.birthday}</td>
+        <td>{user.school}</td>
+        <td>{user.grade}</td>
+      </tr>
+      
+    );
+  });
 
   return (
     <div>
@@ -101,7 +135,7 @@ const Profile = () => {
       <div>
         <label htmlFor="grade">学年</label><br />
         <input
-          type="text"
+          type="number"
           id="grade"
           value={grade}
           onChange={(e) => {setGrade(e.target.value)}}
@@ -111,6 +145,25 @@ const Profile = () => {
       <button onClick={handleClickAddBtn}>
         登録する
       </button>
+      <br />
+      <hr />
+      <h2>ユーザ一覧</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>保護者名</th>
+            <th>住所</th>
+            <th>メールアドレス</th>
+            <th>生徒名</th>
+            <th>生年月日</th>
+            <th>学校名</th>
+            <th>学年</th>
+          </tr>
+        </thead>
+        <tbody>
+          {userLists}
+        </tbody>
+      </table>
       <br />
       <Link href={'/'}>
         <a>Home</a>
